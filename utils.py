@@ -1,23 +1,20 @@
+import numpy as np
+import pandas as pd
 import streamlit as st
-from streamlit_option_menu import option_menu
+import pickle
+
+# ----------- UTILS FOR FORECASTS ----------------
 
 
+@st.cache(show_spinner=False)
+def load_dataset():
+    return pd.read_csv(r'finaldataset.csv')
 
-
-st.set_page_config(page_title=None, page_icon=None, layout="wide")
-
-selected = option_menu(
-    menu_title= None,
-    options= ['Predictive Maintenance', 'Dashboard', 'Creators'],
-    icons=['graph-up', 'clipboard-data'],
-    menu_icon= "cast",
-    default_index= 0,
-    orientation='horizontal',)
-
-if selected == 'Forecast':
-    st.write('')
-elif selected == 'Dashboard':
-    pass
-
-elif selected == 'Creators':
-    pass
+@st.cache(show_spinner=False)
+def process_dataset(df):
+    df['InspectionDate'] = pd.to_datetime(df['InspectionDate'])
+    df['InspectionYear'] = df['InspectionDate'].dt.year
+    df["repairingcostsaved"]=df["repairingcostassumed"]-df["prepairingcostassumed"]
+    df["Lossineurossaved"]=df["Lossineuros"]-df["pLossineuros"]
+    df["carbonfootprintsaved"]=df["carbonfootprintemitted"]-df["pcarbonfootprintemitted"]
+    return df
